@@ -18,6 +18,8 @@ os.makedirs(app.config['DECODED_FOLDER'], exist_ok=True)
 def index():
     return render_template("index.html")
 
+from base64 import b64encode
+
 @app.route('/encode', methods=['GET', 'POST'])
 def encode():
     if request.method == 'POST':
@@ -36,6 +38,7 @@ def encode():
             
             # Encrypt secret message using RSA
             encrypted_secret = encrypt_message(public_key, secret)
+            encrypted_secret = b64encode(encrypted_secret).decode()  # Encode to base64
             
             # Encode encrypted secret message into image
             encode_function(filepath, encrypted_secret)
@@ -50,6 +53,8 @@ def encode():
             
             return f'Encoded image saved at {encoded_filepath}.<br>Private Key (save this securely):<br><textarea readonly>{private_key_pem}</textarea>'
     return render_template("encode.html")
+
+from base64 import b64decode
 
 @app.route("/decode", methods=['GET', 'POST'])
 def decode():
@@ -69,6 +74,7 @@ def decode():
             
             # Decode image to get encrypted secret message
             encrypted_secret = decode_function(filepath)
+            encrypted_secret = b64decode(encrypted_secret)  # Decode from base64
             
             # Decrypt encrypted secret message using RSA
             decrypted_secret = decrypt_message(private_key, encrypted_secret)

@@ -115,7 +115,48 @@ class DCT():
         sImg = np.array(sImg).reshape(row, col)
         sImg = np.uint8(sImg)
         sImg = cv2.merge((sImg,gImg,rImg))
+        encrypted_secret = self._get_encrypted_secret(img)
+        return encrypted_secret
+    def _get_encrypted_secret(self, img):
+        row, col = img.shape[:2]
+        messSize = None
+        messageBits = []
+        buff = 0
+        bImg, gImg, rImg = cv2.split(img)
+        bImg = np.float32(bImg)
+        imgBlocks = [bImg[j:j+8, i:i+8]-128 for (j,i) in itertools.product(range(0,row,8), range(0,col,8))]
+        quantizedDCT = [img_Block/quant for img_Block in imgBlocks]
+        for quantizedBlock in quantizedDCT:
+            DC = quantizedBlock[0][0]
+            DC = np.uint8(DC)
+            DC = np.unpackbits(DC)
+            if DC[7] == 1:
+                buff += (0 & 1) << (7-i)
+            elif DC[7] == 0:
+                buff += (1&1) << (7-i)
+            i = 1+i
+            if i == 8:
+                messageBits.append(chr(buff))
+                buff = 0
+                i =0
+                if messageBits[-1] == '*' and messSize is None:
+                    try:
+                        messSize = int(''.join(messageBits[:-1]))
+                    except:
+                        pass
+        if len(messageBits) - len(str(messSize)) - 1 == messSize:
+            return ''.join(messageBits)[len(str(messSize))+1:].encode()
+        sImgBlocks = [quantizedBlock *quant+128 for quantizedBlock in quantizedDCT]
+        sImg = []
+        for chunkRowBlocks in self.chunks(sImgBlocks, col/8):
+            for rowBlockNum in range(8):
+                for block in chunkRowBlocks:
+                    sImg.extend(block[rowBlockNum])
+        sImg = np.array(sImg).reshape(row, col)
+        sImg = np.uint8(sImg)
+        sImg = cv2.merge((sImg,gImg,rImg))
         return ''
+
       
     """Helper function to 'stitch' new image back together"""
     def chunks(self, l, n):
@@ -132,4 +173,3 @@ class DCT():
             bits.append(binval)
         self.numBits = bin(len(bits))[2:].rjust(8,'0')
         return bits
-
