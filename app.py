@@ -51,7 +51,7 @@ def encode():
                 encryption_algorithm=serialization.NoEncryption()
             ).decode('utf-8')
             
-            return f'Encoded image saved at {encoded_filepath}.<br>Private Key (save this securely):<br><textarea readonly>{private_key_pem}</textarea>'
+            return render_template('result.html', encoded_filepath=encoded_filepath, private_key_pem=private_key_pem)
     return render_template("encode.html")
 
 from base64 import b64decode
@@ -79,7 +79,7 @@ def decode():
             # Decrypt encrypted secret message using RSA
             decrypted_secret = decrypt_message(private_key, encrypted_secret)
             
-            return f'Decoded message: {decrypted_secret.decode()}'
+            return render_template('decoded_message.html', decoded_message=decrypted_secret.decode())
     return render_template("decode.html")
 
 

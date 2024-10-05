@@ -15,6 +15,7 @@
         justify-content: center;
         height: 100vh;
         margin: 0;
+        overflow: hidden;
     }
 
     h1 {
@@ -22,6 +23,7 @@
         margin-bottom: 20px;
         color: #444;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        text-align: center;
     }
 
     label {
@@ -33,6 +35,14 @@
         padding: 10px;
         margin: 10px 0;
         font-size: 1em;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.3s;
+    }
+
+    input[type="file"]:focus, input[type="text"]:focus {
+        border-color: #fcb69f;
     }
 
     button {
@@ -44,14 +54,16 @@
         border: none;
         border-radius: 5px;
         transition: background 0.3s, transform 0.3s;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
     }
 
     button#encode {
-        background: #4CAF50;
+        background: #f77f00;
         color: #fff;
     }
 
-    button:hover {
+    button#encode:hover {
+        background: #d65a00;
         transform: scale(1.1);
     }
 
@@ -59,15 +71,102 @@
         transform: scale(1);
     }
 
+    form {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+
+    .shapes div {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        animation: float 7s infinite;
+    }
+
+    .shapes div:nth-child(1) {
+        width: 100px;
+        height: 100px;
+        left: 10%;
+        top: 20%;
+        animation-delay: 0s;
+    }
+
+    .shapes div:nth-child(2) {
+        width: 50px;
+        height: 50px;
+        left: 70%;
+        top: 10%;
+        animation-delay: 2s;
+    }
+
+    .shapes div:nth-child(3) {
+        width: 150px;
+        height: 150px;
+        left: 50%;
+        top: 80%;
+        animation-delay: 4s;
+    }
+
+    .shapes div:nth-child(4) {
+        width: 200px;
+        height: 200px;
+        left: 90%;
+        top: 50%;
+        animation-delay: 6s;
+    }
+
+    .shapes div:nth-child(5) {
+        width: 75px;
+        height: 75px;
+        left: 30%;
+        top: 70%;
+        animation-delay: 8s;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0) scale(1);
+        }
+        50% {
+            transform: translateY(-20px) scale(1.1);
+        }
+        100% {
+            transform: translateY(0) scale(1);
+        }
+    }
 </style>
 </head>
 <body>
-<h1>Choose a Photo to Encode:</h1>
+<h1>Choose a Photo to Encode</h1>
 <form method="POST" enctype="multipart/form-data">
     <input type="file" id="photo" accept="image/*" name="photo" required>
-    <h1>Enter some text:</h1>
+    <h1>Enter some text</h1>
     <input type="text" id="textInput" placeholder="Type something..." name="secret" required>
     <button id="encode" type="submit">Encode</button>
 </form>
+
+<div class="shapes">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+
 </body>
 </html>
